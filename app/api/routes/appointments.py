@@ -90,11 +90,14 @@ async def create_appointment(
         )
 
     appointment = await appointment_crud.create(db, appointment_data)
+    
+    # Refresh to load relationships
+    await db.refresh(appointment, ['lead'])
 
     return {
         "success": True,
         "message": "Appointment created successfully",
-        "data": appointment,
+        "data": AppointmentResponse.model_validate(appointment),
     }
 
 
