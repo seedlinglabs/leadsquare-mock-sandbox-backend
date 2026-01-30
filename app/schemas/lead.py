@@ -87,3 +87,68 @@ class LeadResponse(LeadBase):
 
     class Config:
         from_attributes = True
+
+
+class PaginationInfo(BaseModel):
+    page: int
+    limit: int
+    total: int
+    totalPages: int
+
+
+class LeadsListResponse(BaseModel):
+    success: bool = True
+    data: list[LeadResponse]
+    pagination: PaginationInfo
+
+
+class LeadDetailResponse(BaseModel):
+    success: bool = True
+    data: LeadResponse
+
+
+class LeadCreateResponse(BaseModel):
+    success: bool = True
+    message: str = "Lead created successfully"
+    data: LeadResponse
+
+
+class LeadUpdateResponse(BaseModel):
+    success: bool = True
+    message: str = "Lead updated successfully"
+    data: LeadResponse
+
+
+class LeadDeleteResponse(BaseModel):
+    success: bool = True
+    message: str = "Lead deleted successfully"
+
+
+class LeadStatusUpdateRequest(BaseModel):
+    status: LeadStatus
+
+
+class LeadStatusUpdateResponse(BaseModel):
+    success: bool = True
+    message: str = "Lead status updated"
+    data: LeadResponse
+
+
+class BulkLeadCreate(BaseModel):
+    leads: list[LeadCreate]
+
+
+class BulkLeadCreateResponse(BaseModel):
+    success: bool = True
+    message: str
+    created: int
+    failed: int
+
+
+class BulkLeadDelete(BaseModel):
+    ids: list[int]
+
+
+class BulkLeadDeleteResponse(BaseModel):
+    success: bool = True
+    message: str

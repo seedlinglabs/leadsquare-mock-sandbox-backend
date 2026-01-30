@@ -2,22 +2,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from typing import Optional, List
-import hashlib
 
 from app.models.user import User
 from app.schemas.user import UserCreate, UserUpdate
-
-
-def hash_password(password: str) -> str:
-    """Simple password hashing - use bcrypt in production"""
-    return hashlib.sha256(password.encode()).hexdigest()
+from app.core.security import get_password_hash, verify_password
 
 
 class UserCRUD:
     async def create(self, db: AsyncSession, user_data: UserCreate) -> User:
         user = User(
             email=user_data.email,
-            hashed_password=hash_password(user_data.password),
+            hashed_password=get_password_hash(user_data.password),
             first_name=user_data.first_name,
             last_name=user_data.last_name,
             phone=user_data.phone,
@@ -25,6 +20,15 @@ class UserCRUD:
         db.add(user)
         await db.commit()
         await db.refresh(user)
+        return user
+
+    async def authenticate(self, db: AsyncSession, email: str, password: str) -> Optional[User]:
+        """Authenticate a user by email and password"""
+        user = await self.get_by_email(db, email)
+        if not user:
+            return None
+        if not verify_password(password, user.hashed_password):
+            return None
         return user
 
     async def get(self, db: AsyncSession, user_id: int) -> Optional[User]:

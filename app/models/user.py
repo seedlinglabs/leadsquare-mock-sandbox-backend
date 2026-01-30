@@ -20,3 +20,15 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     leads = relationship("Lead", back_populates="owner")
+
+    @property
+    def full_name(self) -> str:
+        """Return the full name of the user"""
+        if self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return self.first_name
+
+    @property
+    def role(self) -> str:
+        """Return the role of the user"""
+        return "admin" if self.is_admin else "user"
