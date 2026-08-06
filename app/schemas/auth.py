@@ -23,9 +23,9 @@ class RegisterRequest(BaseModel):
     @field_validator('full_name')
     @classmethod
     def validate_full_name(cls, v):
-        if len(v) < 3:
+        if len(v.strip()) < 3:
             raise ValueError('Full name must be at least 3 characters')
-        return v
+        return v.strip()
 
 
 class LoginRequest(BaseModel):
